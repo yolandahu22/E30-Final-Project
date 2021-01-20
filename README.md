@@ -16,3 +16,9 @@ This folder contains iPython notebooks that walk the user step-by-step through t
 This folder contains sample images that you can place on a phone or laptop screen for testing your Raspberry Pi DiffuserCam. We recommend you start with `sprial_bw.gif`.
 
 
+=======
+# E30-Final-Project
+## Developing a Mirrorless Camera Attachment for Lensless Imaging
+
+###### For our project, we want to implement a variation of the DiffuserCam using an off-the-shelf mirrorless camera. Since most of the existing research in the field approaches lensless imaging with image sensors, we want to adapt the existing designs and algorithms to make a commercial camera capable of doing 3D image reconstruction.  
+>>>>>>> 15f8b8d5c876432022cda79e6c1f92dc6d27cb7f
