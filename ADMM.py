@@ -190,8 +190,6 @@ def runADMM(psf, data):
 
 if __name__ == "__main__":
     ### Reading in params from config file (don't mess with parameter names!)
-    im=Image.open('test-image-cover.jpeg')
-    im.save('test_psf.tif')
     params = yaml.load(open("admm_config.yml"))
     for k,v in params.items():
         exec(k + "=v")
