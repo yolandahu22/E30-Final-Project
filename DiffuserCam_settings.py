@@ -1,6 +1,7 @@
 
 from sympy import Function, Symbol 
 import numpy as np 
+from datetime import datetime
 
 #MAT File with PSF data
 impulse_mat_file_name = './3d_example_data/example_psfs.mat'
@@ -64,11 +65,5 @@ class SolverSettings:
             useGpu = 1
         except:
             useGpu = 0
-
-    #dtstamp = datestr(datetime('now'),'YYYYmmDD_hhMMss')
-
-'''
-import scipy.io
-mat = scipy.io.loadmat(impulse_mat_file_name)
-
-'''
+    now = datetime.now()
+    dtstamp = now.strftime("%d%m%Y_%H%M%S")
