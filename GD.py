@@ -14,7 +14,7 @@ def loaddata(show_im=True):
     
     """In the picamera, there is a non-trivial background 
     (even in the dark) that must be subtracted"""
-    bg = np.mean(psf[5:15,5:15]) 
+    bg = np.mean(psf[1000:2800,1500:2000]) 
     psf -= bg
     data -= bg
     

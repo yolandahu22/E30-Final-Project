@@ -1,5 +1,5 @@
-psfname: "./test_psf.tif" #path to psf image
-imgname: "./tutorial/rawdata_hand_sample.tif" #path to raw data image file
-f: 0.125 #Downsampling factor (must be decimal, must be 1/2^k where k is positive integer)
-iters: 100 #Number of iterations
+psfname: "./DiffuserCam/30large.tif" #path to psf image
+imgname: "./DiffuserCam/testimage_38_large.tif" #path to raw data image file
+f: 0.25 #Downsampling factor (must be decimal, must be 1/2^k where k is positive integer)
+iters: 300 #Number of iterations
 disp_pic: 20 #Number of iterations after which we display intermediate reconstruction
