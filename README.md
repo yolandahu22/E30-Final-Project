@@ -3,28 +3,16 @@
 
 For our project, we want to implement a variation of the DiffuserCam using an off-the-shelf mirrorless camera. Since most of the existing research in the field approaches lensless imaging with image sensors, we want to adapt the existing designs and algorithms to make a commercial camera capable of doing 3D image reconstruction. 
 
-We used the Waller Lab's DiffuserCam code to get started - see their intro below.
+### Contents
 
-=======
+The "3D Files" folder contains the reproduced original MATLAB code for DiffuserCam 3D reconstruction. Key files include `DiffuserCam_settings.m` and `DiffuserCam_main.m`. The "3d_example_data" folder contains Waller Lab's test data for these programs. 
 
-# DiffuserCam-Tutorial
-#### See our [full tutorial](https://waller-lab.github.io/DiffuserCam/tutorial) for complete guides on setting up the DiffuserCam hardware and installing and running the software.
-Below is an overview of the organization of this repo.
-<br><br>
+The "DiffuserCam" folder contains our own `processImage.m` file. We used this to prepare the `.mat` file for 3D reconstruction.
 
-#### Home Directory
-The base directory contains python code for processing DiffuserCam raw data with two algorithms, gradient descent (`GD.py`) and alternating direction method of multipliers (`ADMM.py`). The corresponding `.yml` files should be modified to include the file path of the raw data that is to be processed. 
+"Images" contains all of the Raw data and PSFs from the camera attachment. While both .JPG and .RAF are included, we primarily used .RAF (due to JPEG nonlinearity complexities). 
 
-#### Rpi Folder
-This folder contains python code for previewing and capturing raw images using a Raspberry Pi camera.
+The "rpi", "test_images", and "tutorial" folders were all directly pulled from Waller Lab. "tutorial" contains some useful Jupyter notebooks (`ADMM.ipynb` and `GD.ipynb`) for a thorough overview of the algorithms. 
 
-#### Tutorial Folder
-This folder contains iPython notebooks that walk the user step-by-step through the two algorithms, gradient descent (`GD.ipynb`) and alternating direction method of multipliers (`ADMM.ipynb`). Sample test data is included.
+`ADMM.py`, `GD.py`, and their respecitve configuration files (`admm_config.yml` and `gd_config.yml`) were also reproduced from Waller Lab; we used these for our 2D reconstructions. 
 
-#### Test_Images Folder
-This folder contains sample images that you can place on a phone or laptop screen for testing your Raspberry Pi DiffuserCam. We recommend you start with `sprial_bw.gif`.
-
-
-
- 
-
+`ADMM3D_solver.py`, `DiffuserCam_main.py`, and `DiffuserCam_settings.py` are our own files - we configured Waller Lab's 3D files into Python for integration with 2D files. 
