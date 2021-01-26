@@ -94,18 +94,18 @@ def DiffuserCam_soft_3d(v,h,d,tau,varargin):
 def draw_figures(xk):
     print('Plotting Now')
     #plt.imshow(image, cmap=solverSettings.cmap)
-    fig, axs = plt.subplots(3)
+    fig, (ax1, ax2,ax3)  = plt.subplots(1,3)
     im1 = np.squeeze(np.sum(xk, axis = 2))
-    axs[0].imshow(im1,cmap = solverSettings.cmap)
-    axs[0].set_title('XY')
+    ax1.imshow(im1,cmap = solverSettings.cmap)
+    ax1.set_title('XY')
 
     im2 = np.squeeze(np.amax(xk, axis = 0))
-    axs[1].imshow(im2,cmap = solverSettings.cmap)
-    axs[1].set_title('XZ')
+    ax2.imshow(im2,cmap = solverSettings.cmap)
+    ax2.set_title('XZ')
 
     im3 = np.squeeze(np.amax(xk, axis = 1))
-    axs[2].imshow(im3,cmap = solverSettings.cmap)
-    axs[2].set_title('XZ')
+    ax3.imshow(im3,cmap = solverSettings.cmap)
+    ax3.set_title('XZ')
     plt.show()
 
     return None
