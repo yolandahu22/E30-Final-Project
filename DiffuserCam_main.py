@@ -48,10 +48,10 @@ def DiffuserCam_main():
     [xhat, f] = ADMM3D_solver(psf,b)
     if solverSettings.save_results: 
         print('saving final results. Please wait. \n')
-        path = '.../DiffuserCamResults/'+solverSettings.dtstamp+'/'
+        path = './DiffuserCamResults/'+solverSettings.dtstamp+'/'
         if not os.path.exists(path):
             os.makedirs(path)
-        outfile = '.../DiffuserCamResults/'+solverSettings.dtstamp+'/'+solverSettings.dtstamp+'.mat'
+        outfile = './DiffuserCamResults/'+solverSettings.dtstamp+'/'+solverSettings.dtstamp+'.mat'
         print(outfile)
         xhat_out = xhat
         mdic = {"xhat_out": xhat_out, "b": b, "f":f , "raw_in":imc}
