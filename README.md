@@ -7,7 +7,7 @@ For our project, we want to implement a variation of the DiffuserCam using an of
 
 - The "3D Files" folder contains the reproduced original MATLAB code for DiffuserCam 3D reconstruction. Key files include `DiffuserCam_settings.m` and `DiffuserCam_main.m`. The "3d_example_data" folder contains Waller Lab's test data for these programs. 
 
-- The "DiffuserCam" folder contains our own `processImage.m` file. We used this to prepare the `.mat` file for 3D reconstruction.
+- The "DiffuserCam" folder contains our own `processImage.m` file. We used this to prepare the `.mat` file for 3D reconstruction. This program also contains cleaning data and 3D plotting functionality post-reconstruction to better visualize our reconstruction result.
 
 - "Images" contains all of the Raw data and PSFs from the camera attachment. While .JPG files are included here, we primarily used .RAF (due to JPEG nonlinearity complexities) and uploaded these on our Google Drive. 
 
