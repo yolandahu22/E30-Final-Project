@@ -9,7 +9,7 @@ For our project, we want to implement a variation of the DiffuserCam using an of
 
 - The "DiffuserCam" folder contains our own `processImage.m` file. We used this to prepare the `.mat` file for 3D reconstruction.
 
-- "Images" contains all of the Raw data and PSFs from the camera attachment. While both .JPG and .RAF are included, we primarily used .RAF (due to JPEG nonlinearity complexities). 
+- "Images" contains all of the Raw data and PSFs from the camera attachment. While .JPG files are included here, we primarily used .RAF (due to JPEG nonlinearity complexities) and uploaded these on our Google Drive. 
 
 - The "rpi", "test_images", and "tutorial" folders were all directly pulled from Waller Lab. "tutorial" contains some useful Jupyter notebooks (`ADMM.ipynb` and `GD.ipynb`) for a thorough overview of the algorithms. 
 
