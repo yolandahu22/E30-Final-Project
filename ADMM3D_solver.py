@@ -69,16 +69,26 @@ def DiffuserCam_soft(x,tau):
     return threshed
 
 def DiffuserCam_soft_3d(v,h,d,tau,varargin):
-    '''
+    
     if np.shape(v)[0]!= 0: 
         mag = np.sqrt(np.square(np.concatenate((v,np.zeros(1,np.shape(v)[1],np.shape(v)[2])),axis=0)+ \
-                    np.concatenate((h,np.zeros(np.shape(h)[0],1,np.shape(h)[2])),axis=1)+np.concatenate((d,np.zeros(np.shape(d)[0],np.shape(d)[1],1)),axis=2)
-        )
-        #magt = DiffuserCam_soft(mag,tau)
-        #mmult = magt./mag
-       #mmult(mag==0) = 0
-    '''
-    return varagout
+                    np.concatenate((h,np.zeros(np.shape(h)[0],1,np.shape(h)[2])),axis=1)+np.concatenate((d,np.zeros(np.shape(d)[0],np.shape(d)[1],1)),axis=2)))
+
+        magt = DiffuserCam_soft(mag,tau)
+        mmult = np.divide(magt, mag)
+        mmult[mag == 0] = 0
+        
+        varargout = []
+        varargout.append(v * mmult[0:-2,:,:])
+        varargout.append(h * mmult[:, 0:-2, :])
+        varargout.append(d * mmult[:,:,0:-2])
+
+        if varargin is not None:
+            varargout[4] = DiffuserCam_soft(varargin[0], tau)
+    else:
+        varargout = []
+        varargout.append(DiffuserCam_soft(varargin[0], tau))
+    return varargout #should be python list of numpy arrays? hopefully
 
 def draw_figures(xk):
     #plt.imshow(image, cmap=solverSettings.cmap)
