@@ -41,10 +41,12 @@ colormap(gray)
 %% 
 xhat_new=max(max(max(xhat_out)))-xhat_out;
 count=0
-for k=1:15
-    for i=1:600
-        for j=1:800
-            if (xhat_new(i,j,k)<0.5)
+max_val = max(max(max(xhat_out)))
+[Nx, Ny,Nz] = size(xhat_new)
+for k=1:Nz
+     for i=150:(Nx-150)
+        for j=200:(Ny-200)
+            if (xhat_new(i,j,k)<max_val-0.2)
                 count=count+1;
             end
         end
@@ -57,10 +59,10 @@ Y=zeros(1,count);
 Z=zeros(1,count);
 C=zeros(1,count);
 p=1;
-for k=1:15
-    for i=1:600
-        for j=1:800
-            if (xhat_new(i,j,k)<1.3)
+for k=1:Nz
+     for i=150:(Nx-150)
+        for j=200:(Ny-200)
+            if (xhat_new(i,j,k)<max_val-0.2)
                 X(p)=i;
                 Y(p)=j;
                 Z(p)=k;
@@ -72,5 +74,5 @@ for k=1:15
 end
 
 %%
-scatter3(X,Y,Z,1,C,'filled')
-colormap(gray)
+scatter3(X,Y,Z,15,C,'filled')
+colormap(copper)
