@@ -49,9 +49,9 @@ class solverSettings:
     #Folder for saving state. If it doesn't exist, create it. 
     save_dir = '../DiffuserCamResults/'
 
-    def disp_crop(x):
+    def disp_crop(self,x):
         return x[np.floor(np.size(x)[0]/4):np.floor(np.size(x)[0]*3/4),np.floor(np.size(x)[1]/4):np.floor(np.size(x)[1]*3/4),:]
-    def disp_func(x):
+    def disp_func(self,x):
         return x
     disp_figs = 50 #If set to 0, never display. If set to N>=1, show every N.
     print_interval = 50 #Print cost every N iterations. Default 1. If set to 0, don't print.
