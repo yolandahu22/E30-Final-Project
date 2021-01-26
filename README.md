@@ -18,3 +18,5 @@ For our project, we want to implement a variation of the DiffuserCam using an of
 - `ADMM3D_solver.py`, `DiffuserCam_main.py`, and `DiffuserCam_settings.py` are our own files - we configured Waller Lab's 3D files into Python for integration with 2D files. 
 
 - `Code_summary.pdf` serves as a high-level overview of our code for ease of understanding. 
+
+- `process_raw.py` is our own file to prepare the Images for use in ADMM/GD algorithms.
