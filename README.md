@@ -13,6 +13,8 @@ For our project, we want to implement a variation of the DiffuserCam using an of
 
 - The "rpi", "test_images", and "tutorial" folders were all directly pulled from Waller Lab. "tutorial" contains some useful Jupyter notebooks (`ADMM.ipynb` and `GD.ipynb`) for a thorough overview of the algorithms. 
 
+- "CAD files" contain schematics of our diffuser and attachment hardware components.
+
 - `ADMM.py`, `GD.py`, and their respecitve configuration files (`admm_config.yml` and `gd_config.yml`) were also reproduced from Waller Lab; we used these for our 2D reconstructions. 
 
 - `ADMM3D_solver.py`, `DiffuserCam_main.py`, and `DiffuserCam_settings.py` are our own files - we configured Waller Lab's 3D files into Python for integration with 2D files. 
