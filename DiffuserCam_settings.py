@@ -10,7 +10,7 @@ impulse_mat_file_name = './3d_example_data/example_psfs.mat'
 impulse_var_name = 'psf'
 
 #Measurement
-image_file = './example_data/example_raw.png'
+image_file = './3d_example_data/example_raw.png'
 color_to_process = 'mono'  #'red','green','blue', or 'mono'. If raw file is mono, this is ignored
 image_bias = 100   #If camera has bias, subtract from measurement file. 
 psf_bias = 102   #if PSF needs sensor bias removed, put that here.
@@ -18,14 +18,14 @@ lateral_downsample = 1  #factor to downsample impulse stack laterally. Must be m
 axial_downsample = 1  #Axial averageing of impulse stack. Must be multiple of 2 and >= 1.
  
 #Allow user to use subset of Z. This is computed BEFORE downsampling by a factor of AXIAL_DOWNSAMPLE
-start_z = 1  #First plane to reconstruct. 1 indexed, as is tradition.
+start_z = 0  #First plane to reconstruct. 1 indexed, as is tradition.
 end_z = 0   #Last plane to reconstruct. If set to 0, use last plane in file.
  
  
 # Populate solver options
  
 # Solver parameters
-class SolverSettings: 
+class solverSettings: 
     tau = .000600    #sparsity parameter for TV
     tau_n = .0400     #sparsity param for native sparsity
     mu1 = 1    #Initialize ADMM tuning params to 1. These will be updated automatically by the autotune. 
