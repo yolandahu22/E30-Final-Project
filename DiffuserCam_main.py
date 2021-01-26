@@ -4,6 +4,7 @@ from scipy.io import loadmat,savemat
 import numpy as np
 from PIL import Image
 from ADMM3D_solver import *
+import os
 
 def DiffuserCam_main():
     #Solve for image from DiffuserCam. First rev: 3D ADMM only. 
@@ -44,12 +45,14 @@ def DiffuserCam_main():
     imc = np.array(imc)
     b = imc/np.max(imc)
 
-    outfile = '.../DiffuserCamResults/'+solverSettings.dtstamp+'.mat'
-    print(outfile)
-
     [xhat, f] = ADMM3D_solver(psf,b)
     if solverSettings.save_results: 
         print('saving final results. Please wait. \n')
+        path = '.../DiffuserCamResults/'+solverSettings.dtstamp+'/'
+        if not os.path.exists(path):
+            os.makedirs(path)
+        outfile = '.../DiffuserCamResults/'+solverSettings.dtstamp+'/'+solverSettings.dtstamp+'.mat'
+        print(outfile)
         xhat_out = xhat
         mdic = {"xhat_out": xhat_out, "b": b, "f":f , "raw_in":imc}
         savemat(outfile,mdic)
