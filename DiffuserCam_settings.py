@@ -1,5 +1,4 @@
 
-from sympy import Function, Symbol 
 import numpy as np 
 from datetime import datetime
 
@@ -50,9 +49,10 @@ class solverSettings:
     #Folder for saving state. If it doesn't exist, create it. 
     save_dir = '../DiffuserCamResults/'
 
-    x = Symbol('x')
-    #solverSettings.disp_crop = gather(x(floor(size(x,1)/4):floor(size(x,1)*3/4),...floor(size(x,2)/4):np.floor(size(x,2)*3/4),:))
-    disp_func = x #Function handle to modify image before display. No change to data, just for display purposes
+    def disp_crop(x):
+        return x[np.floor(np.size(x)[0]/4):np.floor(np.size(x)[0]*3/4),np.floor(np.size(x)[1]/4):np.floor(np.size(x)[1]*3/4),:]
+    def disp_func(x):
+        return x
     disp_figs = 50 #If set to 0, never display. If set to N>=1, show every N.
     print_interval = 50 #Print cost every N iterations. Default 1. If set to 0, don't print.
     fig_num = 1 #Figure number to display in
