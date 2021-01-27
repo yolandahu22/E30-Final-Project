@@ -43,7 +43,8 @@ def DiffuserCam_main():
     #assume image is preprocesssed into monochromic
     imc = Image.open(DiffuserCam_settings.image_file)
     imc = np.array(imc)
-    b = imc/np.max(imc)
+    b = imc - DiffuserCam_settings.image_bias
+    b = b/np.amax(b)
 
     [xhat, f] = ADMM3D_solver(psf,b)
     if solverSettings.save_results: 
@@ -58,5 +59,6 @@ def DiffuserCam_main():
         savemat(outfile,mdic)
 
     return xhat,f
+
 
 xhat,f=DiffuserCam_main()

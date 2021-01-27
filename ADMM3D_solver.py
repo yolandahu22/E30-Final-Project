@@ -41,7 +41,7 @@ def Psi(X):
     return k1,k2,k3
 
 def generate_laplacian(lapl):
-    lapl[0] = 6
+    lapl[0,0,0] = 6
     lapl[0,1,0] = -1
     lapl[1,0,0] = -1
     lapl[0,0,1] = -1
@@ -72,30 +72,17 @@ def DiffuserCam_soft(x,tau):
 def DiffuserCam_soft_3d(v,h,d,tau,varargin):
     
     if np.shape(v)[0]!= 0: 
-<<<<<<< HEAD
-        mag = np.sqrt(np.square(np.concatenate((v,np.zeros(1,np.shape(v)[1],np.shape(v)[2])),axis=0)+ \
-                    np.concatenate((h,np.zeros(np.shape(h)[0],1,np.shape(h)[2])),axis=1)+np.concatenate((d,np.zeros(np.shape(d)[0],np.shape(d)[1],1)),axis=2)))
-=======
         mag = np.sqrt(np.square(np.concatenate((v,np.zeros((1,np.shape(v)[1],np.shape(v)[2]))),axis=0)+ 
                     np.concatenate((h,np.zeros((np.shape(h)[0],1,np.shape(h)[2]))),axis=1)+np.concatenate((d,np.zeros((np.shape(d)[0],np.shape(d)[1],1))),axis=2)))
->>>>>>> 3883eb5446fbcefc1b526d64846bac7bb4403804
 
         magt = DiffuserCam_soft(mag,tau)
         mmult = np.divide(magt, mag)
         mmult[mag == 0] = 0
-<<<<<<< HEAD
-        
-        varargout = []
-        varargout.append(v * mmult[0:-2,:,:])
-        varargout.append(h * mmult[:, 0:-2, :])
-        varargout.append(d * mmult[:,:,0:-2])
-=======
 
         varargout = [0] * 3
         varargout[0]= v * mmult[0:-1,:,:]
         varargout[1] = h * mmult[:, 0:-1, :]
         varargout[2] = d * mmult[:,:,0:-1]
->>>>>>> 3883eb5446fbcefc1b526d64846bac7bb4403804
 
         if varargin is not None:
             varargout[4] = DiffuserCam_soft(varargin[0], tau)
@@ -118,7 +105,7 @@ def draw_figures(xk):
 
     im3 = np.squeeze(np.amax(xk, axis = 1))
     ax3.imshow(im3,cmap = solverSettings.cmap)
-    ax3.set_title('XZ')
+    ax3.set_title('YZ')
     plt.show()
 
     return None
@@ -167,21 +154,21 @@ def ADMM3D_solver(psf,b):
 
     HtH = np.abs(np.multiply(Hs,Hs_conj)) 
     
-    vk = 0*np.real(Hs)
-    xi = vk
-    rho = vk
+    vk = np.zeros_like(Hs, dtype = np.float32)
+    xi = np.copy(vk)
+    rho = np.copy(vk)
     b = np.expand_dims(b, axis =2)
     Dtb= pad3d(pad2d(b,p1,p2),Nz)
 
     if np.char.lower(solverSettings.regularizer) =='tv':
-        PsiTPsi = generate_laplacian(vk)
-        eta_1 = vk[0:-1,:,:]
-        eta_2 = vk[:,0:-1,:]
-        eta_3 = vk[:,:,0:-1]
+        PsiTPsi = generate_laplacian(np.copy(vk))
+        eta_1 = np.copy(vk[0:-1,:,:])
+        eta_2 = np.copy(vk[:,0:-1,:])
+        eta_3 = np.copy(vk[:,:,0:-1])
         uk1,uk2,uk3 = Psi(vk)
-        Lvk1 = uk1
-        Lvk2 = uk2
-        Lvk3 = uk3
+        Lvk1 = np.copy(uk1)
+        Lvk2 = np.copy(uk2)
+        Lvk3 = np.copy(uk3)
 
     v_mult = 1./(mu1*HtH+mu2*PsiTPsi+mu3)
     DtD = pad3d(pad2d(np.ones_like(b),p1,p2),Nz)
@@ -200,16 +187,16 @@ def ADMM3D_solver(psf,b):
         regularizer_penalty = primal_resid_u
         
     tic()
-    Hvkp = vk
+    Hvkp = np.copy(vk)
     while (n<solverSettings.maxIter): 
-        Hvk = Hvkp 
+        Hvk = np.copy(Hvkp) 
         nukp = np.multiply(nu_mult,(mu1 *(xi/mu1+Hvk)+Dtb))
         wkp = np.maximum(rho/mu3+vk, 0)
         if np.char.lower(solverSettings.regularizer) =='tv':
             uk1,uk2,uk3 = DiffuserCam_soft_3d(Lvk1+eta_1/mu2, Lvk2+eta_2/mu2, Lvk3+eta_3/mu2,solverSettings.tau/mu2,None)
             vkp_numerator = mu3*(wkp-rho/mu3) + mu2*PsiT(uk1 - eta_1/mu2,uk2 - eta_2/mu2, uk3 - eta_3/mu2) + mu1*Hadj(nukp - xi/mu1)
 
-        vkp = np.real(np.multiply(np.fft.ifftn(v_mult),np.fft.fftn(vkp_numerator)))
+        vkp = np.real(np.fft.ifftn(np.multiply(v_mult,np.fft.fftn(vkp_numerator))))
 
         Hvkp = Hfor(vkp)
         r_sv = Hvkp-nukp
@@ -274,3 +261,4 @@ def ADMM3D_solver(psf,b):
         
         n = n+1
     return vk, f
+
