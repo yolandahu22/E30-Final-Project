@@ -23,6 +23,8 @@ For our project, we want to implement a variation of the DiffuserCam using an of
 
 - `process_raw.py` is our own file to prepare the Images for use in ADMM/GD algorithms.
 
+- `psf_stack.py` is our own file to prepare the PSF stacks and test image for 3D reconstruction. It will first convert raw PSFs into TIF files, crop them, and then stack them into a 3D matrix. The matrix will be saved to a MAT file at the end. 
+
 ### Reconstructing 3D images in Python
 
 The workflow for doing 3D images in Python that we wrote is heavily adapted from the Waller lab's MATLAB code and follows a similar procedure. Both take the same inputs. A .mat file containing all of the point spread functions to be used is specified as impulse_mat_file_name, and a corresponding image is specified as image_file. There are also options to use a subset of the PSFs, to change the bias, solver parameters, and the number of iterations, although the defaults that are set now work well. Note that paralellization on the GPU is not yet implemented in Python as it is in MATLAB.
