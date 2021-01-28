@@ -7,6 +7,17 @@ import matplotlib.pyplot as plt
 
 import time
 
+class f:
+    dual_resid_s = np.full((1,solverSettings.maxIter), np.nan)
+    primal_resid_s = np.full((1,solverSettings.maxIter), np.nan)
+    dual_resid_u = np.copy(dual_resid_s)
+    primal_resid_u = np.copy(dual_resid_u)
+    dual_resid_w = np.copy(dual_resid_s)
+    primal_resid_w = np.copy(dual_resid_s)
+    objective = np.copy(primal_resid_u) 
+    data_fidelity = np.copy(primal_resid_u)
+    regularizer_penalty = np.copy(primal_resid_u)
+
 def TicTocGenerator():
     # Generator that returns time differences
     ti = 0           # initial time
@@ -35,13 +46,13 @@ def PsiT(P1,P2,P3):
                         np.concatenate((np.expand_dims(P2[:,0,:], axis =1),np.diff(P2,1,axis = 1),np.expand_dims(-P2[:,-1,:],axis =1)),axis=1) + np.concatenate((np.expand_dims(P3[:,:,0],axis = 2),np.diff(P3,1,axis = 2),np.expand_dims(-P3[:,:,-1], axis =2)),axis=2)
 
 def Psi(X):
-    k1 = -np.diff(X,1,0)
-    k2 = -np.diff(X,1,1)
-    k3 = -np.diff(X,1,2)
+    k1 = -np.diff(X,1,axis = 0)
+    k2 = -np.diff(X,1,axis = 1)
+    k3 = -np.diff(X,1,axis = 2)
     return k1,k2,k3
 
 def generate_laplacian(lapl):
-    lapl[0] = 6
+    lapl[0,0,0] = 6
     lapl[0,1,0] = -1
     lapl[1,0,0] = -1
     lapl[0,0,1] = -1
@@ -52,16 +63,17 @@ def generate_laplacian(lapl):
     return PsiTpsi
 
 def ADMM3D_update_param(mu,resid_tol,mu_inc,mu_dec,r,s):
-    if (r > resid_tol*s):
+    if (r > (resid_tol*s)):
         mu_out = mu*mu_inc
         mu_update = 1
-    elif (r*resid_tol < s):
+    elif ((r*resid_tol < s)):
         mu_out = mu/mu_dec
         mu_update = -1
     else:
         mu_out = mu
         mu_update = 0
     return mu_out,mu_update
+
 
 def DiffuserCam_soft(x,tau):
 
@@ -72,17 +84,17 @@ def DiffuserCam_soft(x,tau):
 def DiffuserCam_soft_3d(v,h,d,tau,varargin):
     
     if np.shape(v)[0]!= 0: 
-        mag = np.sqrt(np.square(np.concatenate((v,np.zeros((1,np.shape(v)[1],np.shape(v)[2]))),axis=0)+ 
-                    np.concatenate((h,np.zeros((np.shape(h)[0],1,np.shape(h)[2]))),axis=1)+np.concatenate((d,np.zeros((np.shape(d)[0],np.shape(d)[1],1))),axis=2)))
+        mag = np.sqrt(np.square(np.concatenate((v,np.zeros((1,np.shape(v)[1],np.shape(v)[2]))),axis=0))+ 
+                    np.square(np.concatenate((h,np.zeros((np.shape(h)[0],1,np.shape(h)[2]))),axis=1))+np.square(np.concatenate((d,np.zeros((np.shape(d)[0],np.shape(d)[1],1))),axis=2)))
 
         magt = DiffuserCam_soft(mag,tau)
-        mmult = np.divide(magt, mag)
+        mmult = magt/mag
         mmult[mag == 0] = 0
 
         varargout = [0] * 3
-        varargout[0]= v * mmult[0:-1,:,:]
-        varargout[1] = h * mmult[:, 0:-1, :]
-        varargout[2] = d * mmult[:,:,0:-1]
+        varargout[0]= np.multiply(v,mmult[0:-1,:,:])
+        varargout[1] = np.multiply(h, mmult[:, 0:-1, :])
+        varargout[2] = np.multiply(d, mmult[:,:,0:-1])
 
         if varargin is not None:
             varargout[4] = DiffuserCam_soft(varargin[0], tau)
@@ -92,7 +104,6 @@ def DiffuserCam_soft_3d(v,h,d,tau,varargin):
     return varargout #should be python list of numpy arrays? hopefully
 
 def draw_figures(xk):
-    print('Plotting Now')
     #plt.imshow(image, cmap=solverSettings.cmap)
     fig, (ax1, ax2,ax3)  = plt.subplots(1,3)
     im1 = np.squeeze(np.sum(xk, axis = 2))
@@ -105,7 +116,7 @@ def draw_figures(xk):
 
     im3 = np.squeeze(np.amax(xk, axis = 1))
     ax3.imshow(im3,cmap = solverSettings.cmap)
-    ax3.set_title('XZ')
+    ax3.set_title('YZ')
     plt.show()
 
     return None
@@ -116,7 +127,6 @@ def ADMM3D_solver(psf,b):
     mu2 = solverSettings.mu2
     mu3 = solverSettings.mu3
     [Ny, Nx, Nz] = np.shape(psf)
-    print(Ny, Nx, Nz)
 
     p1 = np.floor(Ny/2)    
     p2 = np.floor(Nx/2)
@@ -154,50 +164,38 @@ def ADMM3D_solver(psf,b):
 
     HtH = np.abs(np.multiply(Hs,Hs_conj)) 
     
-    vk = 0*np.real(Hs)
+    vk = np.zeros_like(Hs, dtype = 'float32')
     xi = vk
     rho = vk
     b = np.expand_dims(b, axis =2)
     Dtb= pad3d(pad2d(b,p1,p2),Nz)
 
     if np.char.lower(solverSettings.regularizer) =='tv':
-        PsiTPsi = generate_laplacian(vk)
-        eta_1 = vk[0:-1,:,:]
-        eta_2 = vk[:,0:-1,:]
-        eta_3 = vk[:,:,0:-1]
+        PsiTPsi = generate_laplacian(np.copy(vk))
+        eta_1 = np.copy(vk)[0:-1,:,:]
+        eta_2 = np.copy(vk)[:,0:-1,:]
+        eta_3 = np.copy(vk)[:,:,0:-1]
         uk1,uk2,uk3 = Psi(vk)
-        Lvk1 = uk1
-        Lvk2 = uk2
-        Lvk3 = uk3
+        Lvk1 = np.copy(uk1)
+        Lvk2 = np.copy(uk2)
+        Lvk3 = np.copy(uk3)
 
-    v_mult = 1./(mu1*HtH+mu2*PsiTPsi+mu3)
+    v_mult = 1/(mu1*HtH+mu2*PsiTPsi+mu3)
     DtD = pad3d(pad2d(np.ones_like(b),p1,p2),Nz)
-    nu_mult = 1./(DtD+mu1)
-
+    nu_mult = 1/(DtD+mu1)
     n = 0 
-    class f:
-        dual_resid_s = np.full((1,solverSettings.maxIter), np.nan)
-        primal_resid_s = np.full((1,solverSettings.maxIter), np.nan)
-        dual_resid_u = dual_resid_s
-        primal_resid_u = dual_resid_u
-        dual_resid_w = dual_resid_s
-        primal_resid_w = dual_resid_s
-        objective = primal_resid_u 
-        data_fidelity = primal_resid_u
-        regularizer_penalty = primal_resid_u
-        
+
     tic()
-    Hvkp = vk
+    Hvkp = np.copy(vk)
     while (n<solverSettings.maxIter): 
-        Hvk = Hvkp 
+        Hvk = np.copy(Hvkp) 
         nukp = np.multiply(nu_mult,(mu1 *(xi/mu1+Hvk)+Dtb))
         wkp = np.maximum(rho/mu3+vk, 0)
         if np.char.lower(solverSettings.regularizer) =='tv':
             uk1,uk2,uk3 = DiffuserCam_soft_3d(Lvk1+eta_1/mu2, Lvk2+eta_2/mu2, Lvk3+eta_3/mu2,solverSettings.tau/mu2,None)
             vkp_numerator = mu3*(wkp-rho/mu3) + mu2*PsiT(uk1 - eta_1/mu2,uk2 - eta_2/mu2, uk3 - eta_3/mu2) + mu1*Hadj(nukp - xi/mu1)
 
-        vkp = np.real(np.multiply(np.fft.ifftn(v_mult),np.fft.fftn(vkp_numerator)))
-
+        vkp = np.real(np.fft.ifftn(np.multiply((v_mult),np.fft.fftn(vkp_numerator))))
         Hvkp = Hfor(vkp)
         r_sv = Hvkp-nukp
         xi = xi + mu1*r_sv
@@ -206,9 +204,9 @@ def ADMM3D_solver(psf,b):
         mu1, mu1_update = ADMM3D_update_param(mu1,solverSettings.resid_tol,solverSettings.mu_inc,solverSettings.mu_dec,f.primal_resid_s[0,n],f.dual_resid_s[0,n])
         f.data_fidelity[0,n] = .5*np.square(np.linalg.norm(crop3d(Hvkp)-b))
         if np.char.lower(solverSettings.regularizer) =='tv':
-            Lvk1_ = Lvk1
-            Lvk2_ = Lvk2
-            Lvk3_ = Lvk3
+            Lvk1_ = np.copy(Lvk1)
+            Lvk2_ = np.copy(Lvk2)
+            Lvk3_ = np.copy(Lvk3)
             Lvk1, Lvk2, Lvk3 = Psi(vkp)
             r_su_1 = Lvk1 - uk1
             r_su_2 = Lvk2 - uk2
@@ -219,7 +217,6 @@ def ADMM3D_solver(psf,b):
             f.dual_resid_u[0,n] = mu2*np.sqrt(np.square(np.linalg.norm(vec(Lvk1_ - Lvk1))) + np.square(np.linalg.norm(vec(Lvk2_ - Lvk2))) + np.square(np.linalg.norm(vec(Lvk3_ - Lvk3))))
             f.primal_resid_u[0,n] = np.sqrt(np.square(np.linalg.norm(vec(r_su_1))) + np.square(np.linalg.norm(vec(r_su_2))) + np.square(np.linalg.norm(vec(r_su_3))))
             f.regularizer_penalty[0,n] = solverSettings.tau*(np.sum(vec(np.abs(Lvk1))) + np.sum(vec(np.abs(Lvk2))) + sum(vec(np.abs(Lvk3))))
-        
 
         f.objective[0,n] = f.data_fidelity[0,n] + f.regularizer_penalty[0,n]
     
@@ -239,7 +236,7 @@ def ADMM3D_solver(psf,b):
             v_mult = 1./(mu1*HtH + mu2*PsiTPsi + mu3)
             nu_mult = 1./(DtD + mu1)
          
-        vk = vkp
+        vk = np.copy(vkp)
         '''
         if np.mod(n,solverSettings.save_every) == 0:
             print('saving state %i...\n',n)
@@ -248,16 +245,15 @@ def ADMM3D_solver(psf,b):
             print('done saving\n')
         '''
         print(n)
-        if n!=0:
-            if np.mod(n,solverSettings.print_interval) == 0:
-                t_iter = toc()/solverSettings.print_interval
+        if np.mod(n+1,solverSettings.print_interval) == 0:
+            t_iter = toc()/solverSettings.print_interval
         
-                print('iter: ', n)
-                print('t: ',t_iter)
+            print('iter: %d \t t: %.2f \t cost: %.2f \t data_fidelity: %.2f \t norm: %.2f \t Primal v: %.2f \t Dual v: %.2f \t Primal u: %.2f \t Dual u: %.2f \t Primal w: %.2f \t Dual w: %.2f \t mu1: %.2f \t mu2: %.2f \t mu3: %.2f \n', \
+             n,t_iter,f.objective[0,n],f.data_fidelity[0,n],f.regularizer_penalty[0,n],f.primal_resid_s[0,n], f.dual_resid_s[0,n],f.primal_resid_u[0,n], f.dual_resid_u[0,n],f.primal_resid_w[0,n], f.dual_resid_w[0,n],mu1,mu2,mu3)
 
-                tic()
-        if np.mod(n,solverSettings.disp_figs) == 0 :
-            draw_figures(vk)
+            tic()
+        if np.mod(n+1,solverSettings.disp_figs) == 0 :
+                draw_figures(vk)
         
         n = n+1
     return vk, f

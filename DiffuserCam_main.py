@@ -42,19 +42,19 @@ def DiffuserCam_main():
 
     #assume image is preprocesssed into monochromic
     imc = Image.open(DiffuserCam_settings.image_file)
-    imc = np.array(imc)
-    b = imc/np.max(imc)
+    b = np.array(imc) - DiffuserCam_settings.image_bias
+    b = b/np.amax(b[:])
 
-    [xhat, f] = ADMM3D_solver(psf,b)
+    [xhat, f] = ADMM3D_solver(np.single(psf),np.single(b))
     if solverSettings.save_results: 
         print('saving final results. Please wait. \n')
         path = './DiffuserCamResults/'+solverSettings.dtstamp+'/'
         if not os.path.exists(path):
             os.makedirs(path)
-        outfile = './DiffuserCamResults/'+solverSettings.dtstamp+'/'+solverSettings.dtstamp+'.mat'
+        outfile = solverSettings.dtstamp+'.mat'
         print(outfile)
-        xhat_out = xhat
-        mdic = {"xhat_out": xhat_out, "b": b, "f":f , "raw_in":imc}
+        xhat_out = np.copy(xhat)
+        mdic = {"xhat_out": xhat_out}
         savemat(outfile,mdic)
 
     return xhat,f
