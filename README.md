@@ -22,3 +22,11 @@ For our project, we want to implement a variation of the DiffuserCam using an of
 - `Code_summary.pdf` serves as a high-level overview of our code for ease of understanding. 
 
 - `process_raw.py` is our own file to prepare the Images for use in ADMM/GD algorithms.
+
+### Reconstructing 3D images in Python
+
+The workflow for doing 3D images in Python that we wrote is heavily adapted from the Waller lab's MATLAB code and follows a similar procedure. Both take the same inputs. A .mat file containing all of the point spread functions to be used is specified as impulse_mat_file_name, and a corresponding image is specified as image_file. There are also options to use a subset of the PSFs, to change the bias, solver parameters, and the number of iterations, although the defaults that are set now work well. Note that paralellization on the GPU is not yet implemented in Python as it is in MATLAB.
+
+Once the settings are established, simply running DiffuserCam_main.py from a terminal or IDE will allow for the reconstruction. Plots of slices in XY, XZ, and YZ are plotted every five iterations. When done, the DiffuserCam file returns the reconstructed image, and saves it to a .mat file.
+
+So far, the best way we have found to view 3D reconstructed images is still in MATLAB, using the Volume Viewer app. Future improvements could involve finding or creating a similar viewer in Python.
